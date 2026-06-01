@@ -45,8 +45,8 @@ def get_storage_backend():
         'file': lambda: LocalFileBackend(Config.KEYS_FILE),
         'sqlite': lambda: SQLiteBackend(Config.SQLITE_PATH),
         'env': lambda: EnvBackend(),
-        'database': lambda: _build_database_backend(),
-        'aws_secrets': lambda: _build_aws_secrets_backend(),
+        'database': _build_database_backend,
+        'aws_secrets': _build_aws_secrets_backend,
     }
 
     backend_name = Config.STORAGE_BACKEND
