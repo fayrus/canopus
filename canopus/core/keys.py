@@ -24,8 +24,9 @@ def rotate_key() -> None:
     if _backend.readonly:
         raise NotImplementedError("The active storage backend does not support key rotation.")
     new_key = _cipher.generate_key()
+    new_keys = [*_keys, new_key]
+    _backend.save(new_keys)
     _keys.append(new_key)
-    _backend.save(_keys)
 
 
 def load_keys() -> list[bytes]:
