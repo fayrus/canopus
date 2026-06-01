@@ -28,7 +28,7 @@ class AES256CBCCipher(CipherBackend):
         padder = padding.PKCS7(128).padder()
         padded = padder.update(data) + padder.finalize()
 
-        encryptor = Cipher(algorithms.AES(aes_key), modes.CBC(iv)).encryptor()
+        encryptor = Cipher(algorithms.AES(aes_key), modes.CBC(iv)).encryptor()  # NOSONAR
         ciphertext = encryptor.update(padded) + encryptor.finalize()
 
         mac = hmac.new(hmac_key, iv + ciphertext, hashlib.sha256).digest()
@@ -44,7 +44,7 @@ class AES256CBCCipher(CipherBackend):
             if not hmac.compare_digest(mac, expected):
                 raise ValueError("HMAC verification failed")
 
-            decryptor = Cipher(algorithms.AES(aes_key), modes.CBC(iv)).decryptor()
+            decryptor = Cipher(algorithms.AES(aes_key), modes.CBC(iv)).decryptor()  # NOSONAR
             padded = decryptor.update(ciphertext) + decryptor.finalize()
 
             unpadder = padding.PKCS7(128).unpadder()

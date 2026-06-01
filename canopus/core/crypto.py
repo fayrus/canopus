@@ -4,6 +4,7 @@ from canopus.cipher.base import CipherBackend
 from canopus.core.keys import get_keys
 
 _cipher: CipherBackend | None = None
+_INTERNAL_ERROR_MESSAGE = 'Internal server error'
 
 
 def init_cipher(cipher: CipherBackend) -> None:
@@ -72,8 +73,8 @@ def encrypt_data(data: dict, key_version: int | None = None) -> dict:
         ciphertext = f"canopus:v{key_index}:{_cipher.alias}:{token}"
 
         return _success({'ciphertext': ciphertext})
-    except Exception as e:
-        return _error(str(e), 'INTERNAL_ERROR')
+    except Exception:
+        return _error(_INTERNAL_ERROR_MESSAGE, 'INTERNAL_ERROR')
 
 
 def decrypt_data(formatted_ciphertext: str) -> dict:
@@ -100,5 +101,5 @@ def decrypt_data(formatted_ciphertext: str) -> dict:
         return _success({'plaintext': plaintext})
     except ValueError:
         return _error('Invalid ciphertext', 'INVALID_CIPHERTEXT')
-    except Exception as e:
-        return _error(str(e), 'INTERNAL_ERROR')
+    except Exception:
+        return _error(_INTERNAL_ERROR_MESSAGE, 'INTERNAL_ERROR')

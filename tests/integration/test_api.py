@@ -53,9 +53,27 @@ class TestEncryptEndpoint:
         assert r.get_json()['data']['code'] == 'UNSUPPORTED_TYPE'
 
     def test_encrypt_invalid_key_version_returns_400(self, client):
-        r = encrypt(client, {'plaintext': 'hello'}, query_string={'key_version': 99})
+        r = encrypt(client, {'plaintext': 'hello', 'key_version': 99})
         assert r.status_code == 400
         assert r.get_json()['data']['code'] == 'INVALID_KEY_VERSION'
+
+    def test_encrypt_invalid_key_version_type_returns_400(self, client):
+        r = encrypt(client, {'plaintext': 'hello', 'key_version': 'latest'})
+        assert r.status_code == 400
+        assert r.get_json()['data']['code'] == 'INVALID_KEY_VERSION'
+
+    def test_encrypt_internal_error_does_not_expose_details(self, client, monkeypatch):
+        def raise_internal_error():
+            raise RuntimeError('sensitive backend detail')
+
+        monkeypatch.setattr('canopus.core.crypto.get_keys', raise_internal_error)
+
+        r = encrypt(client, {'plaintext': 'hello'})
+
+        assert r.status_code == 500
+        data = r.get_json()
+        assert data['data']['code'] == 'INTERNAL_ERROR'
+        assert data['data']['message'] == 'Internal server error'
 
 
 class TestDecryptEndpoint:
