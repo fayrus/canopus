@@ -50,6 +50,11 @@ class TestEncryptData:
         assert result['status'] == 'error'
         assert result['data']['code'] == 'INVALID_KEY_VERSION'
 
+    def test_encrypt_negative_key_version(self):
+        result = crypto.encrypt_data({'plaintext': 'hello'}, key_version=-1)
+        assert result['status'] == 'error'
+        assert result['data']['code'] == 'INVALID_KEY_VERSION'
+
     def test_encrypt_with_explicit_key_version(self):
         result = crypto.encrypt_data({'plaintext': 'hello'}, key_version=0)
         assert result['status'] == 'success'
@@ -93,6 +98,11 @@ class TestDecryptData:
 
     def test_decrypt_key_version_out_of_range(self):
         result = crypto.decrypt_data('canopus:v99:f:sometoken')
+        assert result['status'] == 'error'
+        assert result['data']['code'] == 'INVALID_CIPHERTEXT'
+
+    def test_decrypt_negative_key_version(self):
+        result = crypto.decrypt_data('canopus:v-1:f:sometoken')
         assert result['status'] == 'error'
         assert result['data']['code'] == 'INVALID_CIPHERTEXT'
 
