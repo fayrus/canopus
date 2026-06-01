@@ -96,6 +96,11 @@ class TestDecryptData:
         assert result['status'] == 'error'
         assert result['data']['code'] == 'INVALID_CIPHERTEXT'
 
+    def test_decrypt_empty_cipher_alias(self):
+        result = crypto.decrypt_data('canopus:v0::sometoken')
+        assert result['status'] == 'error'
+        assert result['data']['code'] == 'INVALID_CIPHERTEXT'
+
     def test_decrypt_key_version_out_of_range(self):
         result = crypto.decrypt_data('canopus:v99:f:sometoken')
         assert result['status'] == 'error'
