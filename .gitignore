@@ -15,6 +15,7 @@ build/
 # Testing
 .pytest_cache/
 .coverage
+.ruff_cache/
 coverage.xml
 htmlcov/
 

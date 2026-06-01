@@ -28,7 +28,7 @@ def _parse_ciphertext(ciphertext: str) -> tuple[int, str, str] | None:
         if len(parts) == 3:
             return int(parts[1][1:]), 'f', parts[2]
     except (ValueError, IndexError):
-        pass
+        return None
     return None
 
 

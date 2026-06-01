@@ -17,7 +17,7 @@ def require_api_key():
     """
     api_key = Config.API_KEY
     if not api_key:
-        return  # auth disabled
+        return None  # auth disabled
 
     token = request.headers.get('X-Canopus-Token', '')
     if not token:
@@ -25,6 +25,8 @@ def require_api_key():
 
     if not hmac.compare_digest(token, api_key):
         return _unauthorized('Invalid API key', 'UNAUTHORIZED')
+
+    return None
 
 
 def require_rotate_key():
@@ -34,7 +36,7 @@ def require_rotate_key():
     Auth is skipped entirely when CANOPUS_API_KEY is not configured (development mode).
     """
     if not Config.API_KEY:
-        return  # auth disabled globally
+        return None  # auth disabled globally
 
     rotate_key = Config.ROTATE_KEY or Config.API_KEY
     token = request.headers.get('X-Canopus-Rotate-Token', '')
@@ -43,3 +45,5 @@ def require_rotate_key():
 
     if not hmac.compare_digest(token, rotate_key):
         return _unauthorized('Invalid rotate key', 'UNAUTHORIZED')
+
+    return None
