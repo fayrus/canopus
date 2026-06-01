@@ -1,0 +1,32 @@
+{
+  "name": "Canopus",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
+  "forwardPorts": [2107],
+  "portsAttributes": {
+    "2107": {
+      "label": "Canopus API",
+      "onAutoForward": "notify"
+    }
+  },
+  "containerEnv": {
+    "CANOPUS_DEBUG": "true",
+    "CANOPUS_PORT": "2107"
+  },
+  "postCreateCommand": "python -m pip install --upgrade pip && python -m pip install -e \".[dev,postgres,mysql,aws]\"",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": ["tests"],
+        "ruff.enable": true
+      }
+    }
+  }
+}

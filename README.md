@@ -9,7 +9,6 @@ A lightweight encryption-as-a-service inspired by HashiCorp Vault. Canopus expos
 - Pluggable storage backends: local file, SQLite, PostgreSQL/MySQL, environment variable, AWS Secrets Manager (stub)
 - Pluggable cipher backends with compliance-oriented options (HIPAA, HITRUST, SOC2, PCI DSS)
 - Consistent JSON API with machine-readable error codes
-- OpenAPI 3.0 spec included
 
 ## Authentication
 
@@ -30,7 +29,7 @@ If `CANOPUS_API_KEY` is not set, authentication is disabled — useful for local
 git clone https://github.com/fayrus/canopus.git
 cd canopus
 python -m venv venv && source venv/bin/activate
-pip install -e .
+python -m pip install -e .
 python app.py
 ```
 
@@ -105,8 +104,6 @@ All error responses follow the same structure:
 }
 ```
 
-See [`docs/openapi.yaml`](docs/openapi.yaml) for the full API specification.
-
 ## Ciphertext format
 
 ```
@@ -178,10 +175,10 @@ Install the required driver:
 
 ```bash
 # PostgreSQL
-pip install psycopg2-binary
+python -m pip install "canopus[postgres]"
 
 # MySQL
-pip install pymysql
+python -m pip install "canopus[mysql]"
 ```
 
 ### `env`
@@ -232,31 +229,20 @@ Minimum IAM permissions required:
 
 ## Docker
 
-**File backend (default):**
-```bash
-docker compose up canopus
-```
+Build and run the image locally:
 
-**PostgreSQL:**
-```bash
-docker compose --profile postgres up
-```
-
-**MySQL:**
-```bash
-docker compose --profile mysql up
-```
-
-Copy `.env.example` to `.env` to customize configuration:
 ```bash
 cp .env.example .env
+docker build -t canopus:dev .
+docker run --rm --env-file .env -p 2107:2107 canopus:dev
 ```
 
 ## Development
 
 ```bash
-pip install -e ".[dev]"
+python -m pip install -e ".[dev]"
 pytest
+ruff check .
 ```
 
 ## Name
