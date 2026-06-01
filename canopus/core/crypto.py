@@ -1,10 +1,18 @@
 import json
 
+from canopus.cipher.aes256cbc import AES256CBCCipher
+from canopus.cipher.aes256gcm import AES256GCMCipher
 from canopus.cipher.base import CipherBackend
+from canopus.cipher.fernet import FernetCipher
 from canopus.core.keys import get_keys
 
 _cipher: CipherBackend | None = None
 _INTERNAL_ERROR_MESSAGE = 'Internal server error'
+_CIPHER_CLASSES: dict[str, type[CipherBackend]] = {
+    'f': FernetCipher,
+    'g': AES256GCMCipher,
+    'c': AES256CBCCipher,
+}
 
 
 def init_cipher(cipher: CipherBackend) -> None:
@@ -33,14 +41,9 @@ def _parse_ciphertext(ciphertext: str) -> tuple[int, str, str] | None:
 
 
 def _get_cipher_for(alias: str) -> CipherBackend:
-    from canopus.cipher.aes256cbc import AES256CBCCipher
-    from canopus.cipher.aes256gcm import AES256GCMCipher
-    from canopus.cipher.fernet import FernetCipher
-
-    ciphers = {'f': FernetCipher, 'g': AES256GCMCipher, 'c': AES256CBCCipher}
-    if alias not in ciphers:
+    if alias not in _CIPHER_CLASSES:
         raise ValueError(f"Unknown cipher alias '{alias}'")
-    return ciphers[alias]()
+    return _CIPHER_CLASSES[alias]()
 
 
 def _error(message: str, code: str) -> dict:
@@ -55,7 +58,7 @@ def encrypt_data(data: dict, key_version: int | None = None) -> dict:
     try:
         keys = get_keys()
 
-        if key_version is not None and key_version >= len(keys):
+        if key_version is not None and (key_version < 0 or key_version >= len(keys)):
             return _error('Invalid key version', 'INVALID_KEY_VERSION')
 
         if 'plaintext' not in data:
@@ -85,7 +88,7 @@ def decrypt_data(formatted_ciphertext: str) -> dict:
     version, alias, token = parsed
     keys = get_keys()
 
-    if version >= len(keys):
+    if version < 0 or version >= len(keys):
         return _error('Invalid ciphertext or key version', 'INVALID_CIPHERTEXT')
 
     try:
