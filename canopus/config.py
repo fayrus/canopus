@@ -4,6 +4,7 @@ import os
 class Config:
     # Server
     DEBUG = os.getenv('CANOPUS_DEBUG', 'false').lower() == 'true'
+    HOST = os.getenv('CANOPUS_HOST', '127.0.0.1')
     PORT = int(os.getenv('CANOPUS_PORT', '2107'))
 
     # Storage backend: "file" | "sqlite"

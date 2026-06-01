@@ -4,4 +4,4 @@ from canopus.config import Config
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=Config.DEBUG, port=Config.PORT)
+    app.run(host=Config.HOST, debug=Config.DEBUG, port=Config.PORT)

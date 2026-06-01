@@ -25,6 +25,11 @@ _ERROR_STATUS_CODES = {
 def _respond(result: dict) -> tuple:
     if result['status'] == 'error':
         code = result['data'].get('code', 'INTERNAL_ERROR')
+        if code == 'INTERNAL_ERROR':
+            result = {
+                'status': 'error',
+                'data': {'message': 'Internal server error', 'code': code},
+            }
         return jsonify(result), _ERROR_STATUS_CODES.get(code, 400)
     return jsonify(result), 200
 
@@ -44,10 +49,13 @@ def rotate_key_route():
 
     try:
         rotate_key()
-    except NotImplementedError as e:
+    except NotImplementedError:
         return jsonify({
             'status': 'error',
-            'data': {'message': str(e), 'code': 'ROTATION_NOT_SUPPORTED'},
+            'data': {
+                'message': 'Key rotation is not supported by the configured storage backend',
+                'code': 'ROTATION_NOT_SUPPORTED',
+            },
         }), 501
     new_version = len(get_keys()) - 1
     return jsonify({
@@ -64,7 +72,12 @@ def encrypt():
             'status': 'error',
             'data': {'message': 'Request body is required', 'code': 'MISSING_FIELD'},
         }), 400
-    key_version = request.args.get('key_version', None, type=int)
+    key_version = data.get('key_version')
+    if key_version is not None and not isinstance(key_version, int):
+        return jsonify({
+            'status': 'error',
+            'data': {'message': 'Invalid key version', 'code': 'INVALID_KEY_VERSION'},
+        }), 400
     return _respond(encrypt_data(data, key_version))
 
 

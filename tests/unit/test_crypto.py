@@ -107,11 +107,11 @@ class TestDecryptData:
         assert result['data']['plaintext'] == 'legacy'
 
 
-@pytest.mark.parametrize("CipherClass", [FernetCipher, AES256GCMCipher, AES256CBCCipher])
+@pytest.mark.parametrize("cipher_class", [FernetCipher, AES256GCMCipher, AES256CBCCipher])
 class TestEncryptDecryptPerCipher:
 
-    def test_roundtrip(self, CipherClass, tmp_path):
-        cipher = CipherClass()
+    def test_roundtrip(self, cipher_class, tmp_path):
+        cipher = cipher_class()
         backend = LocalFileBackend(str(tmp_path / f"keys_{cipher.alias}.txt"))
         keys.init(backend, cipher)
         crypto.init_cipher(cipher)

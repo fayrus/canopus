@@ -140,6 +140,7 @@ All configuration is done via environment variables.
 | `CANOPUS_CIPHER` | `f` | Active cipher: `f` (Fernet), `g` (AES-256-GCM), `c` (AES-256-CBC) |
 | `CANOPUS_STORAGE_BACKEND` | `file` | Active storage backend |
 | `CANOPUS_DEBUG` | `false` | Enable Flask debug mode |
+| `CANOPUS_HOST` | `127.0.0.1` | Host interface to bind when running `python app.py` |
 | `CANOPUS_PORT` | `2107` | Port to listen on |
 
 ## Storage backends
